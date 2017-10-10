@@ -9,10 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import javax.imageio.stream.IIOByteBuffer;
+//import javax.imageio.stream.IIOByteBuffer;
 import javax.swing.*;
 import javax.swing.UIManager;
 import javax.swing.event.*;
+import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.Hashtable;
@@ -24,7 +25,7 @@ public class memo1 extends JFrame{
     private JTree tree;
     private Hashtable<String, Integer> treedata;
     private String[] strs;
-    private int line_dat[][];
+    private Document dc;
     private static int win_width = 360, win_height = 640;
 
     public static void main(String[] args) {
@@ -96,6 +97,10 @@ public class memo1 extends JFrame{
         JScrollPane scrollpane2 = new JScrollPane();
         scrollpane2.setViewportView(tx);
         frm.getContentPane().add(scrollpane2, BorderLayout.CENTER);
+
+        dc = tx.getDocument();
+//        dc.addDocumentListener(new DocumentListener());
+        
     }
     protected DefaultMutableTreeNode tree_gen(DefaultMutableTreeNode root) {
         DefaultMutableTreeNode swing = new DefaultMutableTreeNode("Swing");
@@ -119,7 +124,7 @@ public class memo1 extends JFrame{
         return(root);
     }
 
-    class ActionAdapter implements ActionListener {
+    class ActionAdapter implements ActionListener{
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().equals("New")) {
                 tx.setText("これが新規");
