@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import javax.swing.*;
 import javax.swing.UIManager;
 import javax.swing.event.*;
-import javax.swing.text.Document;
+//import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.Hashtable;
@@ -25,7 +25,8 @@ public class memo1 extends JFrame{
     private JTree tree;
     private Hashtable<String, Integer> treedata;
     private String[] strs;
-    private Document dc;
+//    private Document dc;
+    private int hsnom;
     private static int win_width = 360, win_height = 640;
 
     public static void main(String[] args) {
@@ -59,7 +60,7 @@ public class memo1 extends JFrame{
         JMenuItem menuitem1 = new JMenuItem("New") ; menu1.add(menuitem1);
         JMenuItem menuitem2 = new JMenuItem("Open"); menu1.add(menuitem2);
         JMenuItem menuitem3 = new JMenuItem("Save"); menu1.add(menuitem3);
-        menuitem3.setEnabled(false);
+//        menuitem3.setEnabled(false);
 
         JMenu menu2 = new JMenu("Edit"); menubar.add(menu2);
         menu2.setFont(font);
@@ -97,10 +98,6 @@ public class memo1 extends JFrame{
         JScrollPane scrollpane2 = new JScrollPane();
         scrollpane2.setViewportView(tx);
         frm.getContentPane().add(scrollpane2, BorderLayout.CENTER);
-
-        dc = tx.getDocument();
-//        dc.addDocumentListener(new DocumentListener());
-        
     }
     protected DefaultMutableTreeNode tree_gen(DefaultMutableTreeNode root) {
         DefaultMutableTreeNode swing = new DefaultMutableTreeNode("Swing");
@@ -138,7 +135,7 @@ public class memo1 extends JFrame{
                 if (selected == JFileChooser.APPROVE_OPTION){
                     File file = filechooser.getSelectedFile();
                     directory = file.getAbsolutePath();
-                    frm.setTitle(directory);
+                    frm.setTitle(file.getName());
                 }else if (selected == JFileChooser.CANCEL_OPTION){
                 }else if (selected == JFileChooser.ERROR_OPTION){
                 }
@@ -162,7 +159,9 @@ public class memo1 extends JFrame{
                         if (strs[i].length() > 0) {
                             if (i==0) {
                                 strs[i] = strs[i] + "\r\n";
-                            }else {
+                            }else if (i==all_lines-1) {
+                                strs[i] = '.' + strs[i];
+                            }else{   
                                 strs[i] = '.' + strs[i] + "\r\n";
                             }
                             if ((strs[i].charAt(0) == '.') && (strs[i].charAt(1) != '.')) {
@@ -194,7 +193,7 @@ public class memo1 extends JFrame{
                     DefaultMutableTreeNode node = AA;
                     if (node != null) {
                         String hskey = (String) node.getUserObject();
-                        int hsnom = treedata.get(hskey);
+                        hsnom = treedata.get(hskey);
                         tx.setText(strs[hsnom]);
                     }
                 }
@@ -207,16 +206,20 @@ public class memo1 extends JFrame{
                 JFileChooser filechooser = new JFileChooser("d:\\java_work\\intelliJ\\memo1\\src");
                 String directory="";
 
-                int selected = filechooser.showOpenDialog(frm);
+                int selected = filechooser.showSaveDialog(frm);
                 if (selected == JFileChooser.APPROVE_OPTION){
                     File file = filechooser.getSelectedFile();
                     directory = file.getAbsolutePath();
-                    frm.setTitle(directory);
+                    frm.setTitle(file.getName());
                 }else if (selected == JFileChooser.CANCEL_OPTION){
                 }else if (selected == JFileChooser.ERROR_OPTION){
                 }
 
-                String moji = tx.getText();
+//                int all_lines = strs.length;
+                String moji = "";
+                for (String linedt: strs) {
+                    moji = moji + linedt;
+                };
                 try {
                     Files.write(Paths.get(directory), moji.getBytes(StandardCharsets.UTF_8.name()));
                 } catch (Exception aho) {
@@ -241,8 +244,10 @@ public class memo1 extends JFrame{
         public void valueChanged (TreeSelectionEvent e) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
             if (node != null) {
+                strs[hsnom] = tx.getText().replaceAll("\n", "\r\n").replaceAll("\r\r","\r");
+
                 String hskey = (String) node.getUserObject();
-                int hsnom = treedata.get(hskey);
+                hsnom = treedata.get(hskey);
                 tx.setText(strs[hsnom]);
             }
         }
