@@ -79,8 +79,7 @@ public class memo1 extends JFrame{
         frm.setJMenuBar(menubar);//メニューバーをセットする。
     }
     protected void tree_init() {
-        DefaultMutableTreeNode root0 = new DefaultMutableTreeNode("JavaDrive");
-        DefaultMutableTreeNode root = tree_gen(root0);
+        DefaultMutableTreeNode root = tree_gen(new DefaultMutableTreeNode("JavaDrive"));
         tree = new JTree(root);
         tree.setFont(new Font("Migu 1M",Font.PLAIN,12));
         tree.setRootVisible(true);
@@ -88,12 +87,10 @@ public class memo1 extends JFrame{
         JScrollPane scrollPane1 = new JScrollPane();
         scrollPane1.getViewport().setView(tree);
         scrollPane1.setPreferredSize(new Dimension(win_width*1/3,win_height-71));
-        JPanel p = new JPanel();
-        p.add(scrollPane1);
-        frm.getContentPane().add(p, BorderLayout.WEST);
+        frm.getContentPane().add(scrollPane1, BorderLayout.WEST);
     }
     protected void tx_init() {
-        tx=new JTextArea("パピプペポ abcdefg ABCDEFG これがテキストエリアです。");
+        tx=new JTextArea("これがテキストエリアです。");
         tx.setFont(new Font("Migu 1M",Font.PLAIN,12));
         JScrollPane scrollpane2 = new JScrollPane();
         scrollpane2.setViewportView(tx);
