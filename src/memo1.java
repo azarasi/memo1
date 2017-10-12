@@ -94,6 +94,7 @@ public class memo1 extends JFrame{
         tx.setFont(new Font("Migu 1M",Font.PLAIN,12));
         JScrollPane scrollpane2 = new JScrollPane();
         scrollpane2.setViewportView(tx);
+        tx.setCaretPosition(0);
         frm.getContentPane().add(scrollpane2, BorderLayout.CENTER);
     }
     protected DefaultMutableTreeNode tree_gen(DefaultMutableTreeNode root) {
@@ -192,6 +193,7 @@ public class memo1 extends JFrame{
                         String hskey = (String) node.getUserObject();
                         hsnom = treedata.get(hskey);
                         tx.setText(strs[hsnom]);
+                        tx.setCaretPosition(0);
                     }
                 }
                 catch (Exception aho) {//例外処理
@@ -246,6 +248,7 @@ public class memo1 extends JFrame{
                 String hskey = (String) node.getUserObject();
                 hsnom = treedata.get(hskey);
                 tx.setText(strs[hsnom]);
+                tx.setCaretPosition(0);
             }
         }
     }
