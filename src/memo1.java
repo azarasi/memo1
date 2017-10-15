@@ -2,7 +2,7 @@ import java.awt.Font;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Dialog;
+//import java.awt.Dialog;
 import java.io.*;
 
 import java.nio.charset.StandardCharsets;
@@ -18,23 +18,34 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.Hashtable;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+//import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Properties;
+
 public class memo1 extends JFrame{
-    private String lafClassName = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+    private String lafClassName;
     private JFrame frm;
     private JTextArea tx;
     private JTree tree;
     private Hashtable<String, Integer> treedata;
     private String[] strs;
-//    private Document dc;
     private int hsnom;
-    private static int win_width = 360, win_height = 640;
-
+    
+    private int win_width, win_height;
+    private String font_name;
+    private int font_size;
+    private String mem_path;
+    
     public static void main(String[] args) {
         memo1 chou = new memo1();
         chou.init();
     }
 
     protected void init(){
+        prop_read();  //property file read
+
         try {
             UIManager.setLookAndFeel(lafClassName);
             SwingUtilities.updateComponentTreeUI(frm);
@@ -50,6 +61,44 @@ public class memo1 extends JFrame{
         tx_init();    //本文窓の初期化
 
         frm.setVisible(true);
+    }
+    protected void prop_read() {
+//        File prop_file_path = new File(get_currentpath() + "mem.properties");
+        File prop_file_path = new File("mem.properties");
+        if (prop_file_path.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream("mem.properties");
+                InputStreamReader isr = new InputStreamReader(fis, "UTF-8");
+                BufferedReader br = new BufferedReader(isr);
+                Properties prop = new Properties();
+                prop.load(br);
+
+                lafClassName = prop.getProperty("lafClassName");
+                win_width = Integer.parseInt(prop.getProperty("win_width"));
+                win_height = Integer.parseInt(prop.getProperty("win_height"));
+                font_name = prop.getProperty("font_name");
+                font_size = Integer.parseInt(prop.getProperty("font_size"));
+                mem_path = prop.getProperty("mem_path");
+
+            } catch (Exception aho) {//例外処理
+            }
+        }else{
+            lafClassName = "";
+            win_width = 720;
+            win_height = 1280;
+            font_name = "MS Mincho";
+            font_size = 24;
+            mem_path = "";
+        }
+    }
+    String get_currentpath(){
+        String cp=System.getProperty("java.class.path");
+        String fs=System.getProperty("file.separator");
+        String acp=(new File(cp)).getAbsolutePath();
+//
+        int p,q;
+        for(p=0;(q=acp.indexOf(fs,p))>=0;p=q+1);
+        return acp.substring(0,p);
     }
     protected void set_menu() {
         Font font = new Font("Migu 1C",Font.BOLD,12);
@@ -81,17 +130,17 @@ public class memo1 extends JFrame{
     protected void tree_init() {
         DefaultMutableTreeNode root = tree_gen(new DefaultMutableTreeNode("JavaDrive"));
         tree = new JTree(root);
-        tree.setFont(new Font("Migu 1M",Font.PLAIN,12));
+        tree.setFont(new Font(font_name,Font.PLAIN,font_size));
         tree.setRootVisible(true);
 
         JScrollPane scrollPane1 = new JScrollPane();
         scrollPane1.getViewport().setView(tree);
-        scrollPane1.setPreferredSize(new Dimension(win_width*1/3,win_height-71));
+        scrollPane1.setPreferredSize(new Dimension(win_width*1/3,win_height));
         frm.getContentPane().add(scrollPane1, BorderLayout.WEST);
     }
     protected void tx_init() {
         tx=new JTextArea("これがテキストエリアです。");
-        tx.setFont(new Font("Migu 1M",Font.PLAIN,12));
+        tx.setFont(new Font(font_name,Font.PLAIN,font_size));
         JScrollPane scrollpane2 = new JScrollPane();
         scrollpane2.setViewportView(tx);
         tx.setCaretPosition(0);
@@ -126,7 +175,7 @@ public class memo1 extends JFrame{
             }
             if (e.getActionCommand().equals("Open")) {
 
-                JFileChooser filechooser = new JFileChooser("d:\\java_work\\intelliJ\\memo1\\src");
+                JFileChooser filechooser = new JFileChooser(mem_path);
                 String directory="";
 
                 int selected = filechooser.showOpenDialog(frm);
@@ -173,7 +222,6 @@ public class memo1 extends JFrame{
                                 AA.add(BB);
                                 treedata.put(BBd, i);
                             } else if ((strs[i].charAt(0) == '.') && (strs[i].charAt(1) == '.') && (strs[i].charAt(2) == '.')) {
-//                                ii++;
                                 CCd =strs[i].substring(3,strs[i].indexOf("\r\n")-14) ;
                                 CC = new DefaultMutableTreeNode(CCd);
                                 BB.add(CC);
@@ -202,7 +250,7 @@ public class memo1 extends JFrame{
             }
 
             if (e.getActionCommand().equals("Save")) {
-                JFileChooser filechooser = new JFileChooser("d:\\java_work\\intelliJ\\memo1\\src");
+                JFileChooser filechooser = new JFileChooser(mem_path);
                 String directory="";
 
                 int selected = filechooser.showSaveDialog(frm);
@@ -226,7 +274,7 @@ public class memo1 extends JFrame{
             }
 
             if (e.getActionCommand().equals("Ver")) {
-                Dialog alert = new Dialog(frm, "バージョン情報");
+                JDialog alert = new JDialog(frm, "バージョン情報");
                 alert.add(new JLabel("メモ Ver.0.0"));
                 alert.setSize(200, 100);
                 alert.setVisible(true);
