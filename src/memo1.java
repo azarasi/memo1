@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 //import java.awt.Dialog;
 import java.io.*;
+import java.awt.*;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -37,7 +38,10 @@ public class memo1 extends JFrame{
     private String font_name;
     private int font_size;
     private String mem_path;
-    
+
+    protected JComboBox comboFonts;  /* Font選択 */
+    protected JComboBox comboSizes;  /* Fontサイズ */
+
     public static void main(String[] args) {
         memo1 chou = new memo1();
         chou.init();
@@ -45,6 +49,7 @@ public class memo1 extends JFrame{
 
     protected void init(){
         prop_read();  //property file read
+        font_init();
 
         try {
             UIManager.setLookAndFeel(lafClassName);
@@ -91,7 +96,7 @@ public class memo1 extends JFrame{
             mem_path = "";
         }
     }
-    String get_currentpath(){
+    String get_currentpath(){  //IDEのデバッグモードでは動かない？
         String cp=System.getProperty("java.class.path");
         String fs=System.getProperty("file.separator");
         String acp=(new File(cp)).getAbsolutePath();
@@ -100,6 +105,25 @@ public class memo1 extends JFrame{
         for(p=0;(q=acp.indexOf(fs,p))>=0;p=q+1);
         return acp.substring(0,p);
     }
+    protected void font_init() {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String familyName[] = ge.getAvailableFontFamilyNames();
+
+    /* フォント選択用コンボボックス */
+        comboFonts = new JComboBox(familyName);
+        comboFonts.setMaximumSize(comboFonts.getPreferredSize());
+        comboFonts.addActionListener(new ActionAdapter());
+        comboFonts.setActionCommand("comboFonts");
+
+    /* フォントサイズ選択用コンボボックス */
+        comboSizes = new JComboBox(new String[] {"8", "9", "10","11", "12", "14", "16",
+                "18", "20", "22", "24", "26", "28", "36", "48", "72"});
+        comboSizes.setMaximumSize(comboSizes.getPreferredSize());
+        comboSizes.addActionListener(new ActionAdapter());
+        comboSizes.setActionCommand("comboSizes");
+
+    }
+
     protected void set_menu() {
         Font font = new Font("Migu 1C",Font.BOLD,12);
         JMenuBar menubar= new JMenuBar();
@@ -109,21 +133,23 @@ public class memo1 extends JFrame{
         JMenuItem menuitem1 = new JMenuItem("New") ; menu1.add(menuitem1);
         JMenuItem menuitem2 = new JMenuItem("Open"); menu1.add(menuitem2);
         JMenuItem menuitem3 = new JMenuItem("Save"); menu1.add(menuitem3);
-//        menuitem3.setEnabled(false);
+        menuitem1.setEnabled(false);
 
         JMenu menu2 = new JMenu("Edit"); menubar.add(menu2);
         menu2.setFont(font);
-        menu2.setEnabled(false);
+        JMenuItem menuitem4 = new JMenuItem("FontSelect"); menu2.add(menuitem4);
+//        menu2.setEnabled(false);
 
         menubar.add(Box.createHorizontalGlue());
         JMenu menu3 = new JMenu("Help"); menubar.add(menu3);
         menu3.setFont(font);
-        JMenuItem menuitem4 = new JMenuItem("Ver") ; menu3.add(menuitem4);
+        JMenuItem menuitem10 = new JMenuItem("Ver") ; menu3.add(menuitem10);
 
         menuitem1.addActionListener(new ActionAdapter());
         menuitem2.addActionListener(new ActionAdapter());
         menuitem3.addActionListener(new ActionAdapter());
         menuitem4.addActionListener(new ActionAdapter());
+        menuitem10.addActionListener(new ActionAdapter());
 
         frm.setJMenuBar(menubar);//メニューバーをセットする。
     }
@@ -168,7 +194,7 @@ public class memo1 extends JFrame{
         return(root);
     }
 
-    class ActionAdapter implements ActionListener{
+    class ActionAdapter implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (e.getActionCommand().equals("New")) {
                 tx.setText("これが新規");
@@ -176,17 +202,17 @@ public class memo1 extends JFrame{
             if (e.getActionCommand().equals("Open")) {
 
                 JFileChooser filechooser = new JFileChooser(mem_path);
-                String directory="";
+                String directory = "";
 
                 int selected = filechooser.showOpenDialog(frm);
-                if (selected == JFileChooser.APPROVE_OPTION){
+                if (selected == JFileChooser.APPROVE_OPTION) {
                     File file = filechooser.getSelectedFile();
                     directory = file.getAbsolutePath();
                     frm.setTitle(file.getName());
-                }else if (selected == JFileChooser.CANCEL_OPTION){
-                }else if (selected == JFileChooser.ERROR_OPTION){
+                } else if (selected == JFileChooser.CANCEL_OPTION) {
+                } else if (selected == JFileChooser.ERROR_OPTION) {
                 }
-                
+
                 try {
 // 指定のファイル URL のファイルをバイト列として読み込む
                     byte[] fileContentBytes = Files.readAllBytes(Paths.get(directory));
@@ -201,28 +227,28 @@ public class memo1 extends JFrame{
                     DefaultMutableTreeNode BB = new DefaultMutableTreeNode();
                     DefaultMutableTreeNode CC = new DefaultMutableTreeNode();
                     int all_lines = strs.length;
-                    String AAd,BBd,CCd;
+                    String AAd, BBd, CCd;
                     for (int i = 0; i < all_lines; i++) {
                         if (strs[i].length() > 0) {
-                            if (i==0) {
+                            if (i == 0) {
                                 strs[i] = strs[i] + "\r\n";
-                            }else if (i==all_lines-1) {
+                            } else if (i == all_lines - 1) {
                                 strs[i] = '.' + strs[i];
-                            }else{   
+                            } else {
                                 strs[i] = '.' + strs[i] + "\r\n";
                             }
                             if ((strs[i].charAt(0) == '.') && (strs[i].charAt(1) != '.')) {
-                                AAd =strs[i].substring(1,strs[i].indexOf("\r\n")-14) ;
+                                AAd = strs[i].substring(1, strs[i].indexOf("\r\n") - 14);
                                 AA = new DefaultMutableTreeNode(AAd);
                                 root.add(AA);
                                 treedata.put(AAd, i);
                             } else if ((strs[i].charAt(0) == '.') && (strs[i].charAt(1) == '.') && (strs[i].charAt(2) != '.')) {
-                                BBd =strs[i].substring(2,strs[i].indexOf("\r\n")-14) ;
+                                BBd = strs[i].substring(2, strs[i].indexOf("\r\n") - 14);
                                 BB = new DefaultMutableTreeNode(BBd);
                                 AA.add(BB);
                                 treedata.put(BBd, i);
                             } else if ((strs[i].charAt(0) == '.') && (strs[i].charAt(1) == '.') && (strs[i].charAt(2) == '.')) {
-                                CCd =strs[i].substring(3,strs[i].indexOf("\r\n")-14) ;
+                                CCd = strs[i].substring(3, strs[i].indexOf("\r\n") - 14);
                                 CC = new DefaultMutableTreeNode(CCd);
                                 BB.add(CC);
                                 treedata.put(CCd, i);
@@ -243,36 +269,68 @@ public class memo1 extends JFrame{
                         tx.setText(strs[hsnom]);
                         tx.setCaretPosition(0);
                     }
-                }
-                catch (Exception aho) {//例外処理
+                } catch (Exception aho) {//例外処理
                     tx.setText("エラー");
                 }
             }
 
             if (e.getActionCommand().equals("Save")) {
                 JFileChooser filechooser = new JFileChooser(mem_path);
-                String directory="";
+                String directory = "";
 
                 int selected = filechooser.showSaveDialog(frm);
-                if (selected == JFileChooser.APPROVE_OPTION){
+                if (selected == JFileChooser.APPROVE_OPTION) {
                     File file = filechooser.getSelectedFile();
                     directory = file.getAbsolutePath();
                     frm.setTitle(file.getName());
-                }else if (selected == JFileChooser.CANCEL_OPTION){
-                }else if (selected == JFileChooser.ERROR_OPTION){
+                } else if (selected == JFileChooser.CANCEL_OPTION) {
+                } else if (selected == JFileChooser.ERROR_OPTION) {
                 }
 
-//                int all_lines = strs.length;
                 String moji = "";
-                for (String linedt: strs) {
+                for (String linedt : strs) {
                     moji = moji + linedt;
-                };
+                }
+                
                 try {
                     Files.write(Paths.get(directory), moji.getBytes(StandardCharsets.UTF_8.name()));
                 } catch (Exception aho) {
                 }
             }
+            if (e.getActionCommand().equals("FontSelect")) {
+                JDialog font_Sel = new JDialog(frm,"font select");
+                font_Sel.setLayout(new FlowLayout(FlowLayout.LEADING));
+                font_Sel.add(comboFonts);
+                font_Sel.add(comboSizes);
 
+                font_Sel.setSize(300,100);
+                font_Sel.setVisible(true);
+
+
+                font_Sel.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        font_Sel.dispose();
+                    }
+                });
+            }
+            if (e.getActionCommand().equals("comboFonts")) {
+        /* フォント名変更 */
+                font_name = comboFonts.getSelectedItem().toString();
+                Font font = new Font(font_name,Font.PLAIN,font_size);
+                tree.setFont(font);
+                tx.setFont(font);
+            }
+            if (e.getActionCommand().equals("comboSizes")) {
+        /* フォントサイズ変更 */
+                try{
+                    font_size = Integer.parseInt(comboSizes.getSelectedItem().toString());
+                }catch (NumberFormatException ex){
+                    return;
+                }
+                Font font = new Font(font_name,Font.PLAIN,font_size);
+                tree.setFont(font);
+                tx.setFont(font);
+            }
             if (e.getActionCommand().equals("Ver")) {
                 JDialog alert = new JDialog(frm, "バージョン情報");
                 alert.add(new JLabel("メモ Ver.0.0"));
@@ -286,6 +344,7 @@ public class memo1 extends JFrame{
             }
         }
     }
+    
     
     class TreeSelectionAdapter implements TreeSelectionListener {
         public void valueChanged (TreeSelectionEvent e) {
