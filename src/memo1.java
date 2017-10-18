@@ -43,6 +43,8 @@ public class memo1 extends JFrame{
     protected JComboBox comboSizes;  /* Fontサイズ */
 
     public static void main(String[] args) {
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
         memo1 chou = new memo1();
         chou.init();
     }
