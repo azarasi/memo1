@@ -140,6 +140,8 @@ public class memo1 extends JFrame{
         JMenu menu2 = new JMenu("Edit"); menubar.add(menu2);
         menu2.setFont(font);
         JMenuItem menuitem4 = new JMenuItem("FontSelect"); menu2.add(menuitem4);
+        JMenuItem menuitem5 = new JMenuItem("prop read");  menu2.add(menuitem5);
+        JMenuItem menuitem6 = new JMenuItem("prop write"); menu2.add(menuitem6);
 //        menu2.setEnabled(false);
 
         menubar.add(Box.createHorizontalGlue());
@@ -151,6 +153,8 @@ public class memo1 extends JFrame{
         menuitem2.addActionListener(new ActionAdapter());
         menuitem3.addActionListener(new ActionAdapter());
         menuitem4.addActionListener(new ActionAdapter());
+        menuitem5.addActionListener(new ActionAdapter());
+        menuitem6.addActionListener(new ActionAdapter());
         menuitem10.addActionListener(new ActionAdapter());
 
         frm.setJMenuBar(menubar);//メニューバーをセットする。
@@ -332,6 +336,34 @@ public class memo1 extends JFrame{
                 Font font = new Font(font_name,Font.PLAIN,font_size);
                 tree.setFont(font);
                 tx.setFont(font);
+            }
+            if (e.getActionCommand().equals("prop read")) {
+                prop_read();
+                Font font = new Font(font_name,Font.PLAIN,font_size);
+                tree.setFont(font);
+                tx.setFont(font);
+            }
+            if (e.getActionCommand().equals("prop write")) {
+                try {
+                    // FileWriterクラスのオブジェクトを生成する
+                    FileOutputStream fws = new FileOutputStream("mem.properties");
+                    OutputStreamWriter ws = new OutputStreamWriter(fws,"UTF-8");
+                    PrintWriter pw = new PrintWriter(new BufferedWriter(ws));
+
+                    //ファイルに書き込む
+                    pw.println("lafClassName = " + lafClassName);
+                    pw.println("win_width = " + win_width);
+                    pw.println("win_height = " + win_height);
+                    pw.println("font_name = " + font_name);
+                    pw.println("font_size = " + font_size);
+                    pw.println("mem_path = " + mem_path.replace("\\", "\\\\"));
+
+                    //ファイルを閉じる
+                    pw.close();
+                } catch (IOException f) {
+                    f.printStackTrace();
+                }
+
             }
             if (e.getActionCommand().equals("Ver")) {
                 JDialog alert = new JDialog(frm, "バージョン情報");
