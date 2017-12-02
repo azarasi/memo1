@@ -25,7 +25,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
-public class memo1 extends JFrame{
+public class memo1{
     private String lafClassName;
     private JFrame frm;
     private JTextArea tx;
@@ -202,9 +202,11 @@ public class memo1 extends JFrame{
 
     class ActionAdapter implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            //Menu New
             if (e.getActionCommand().equals("New")) {
                 tx.setText("これが新規");
             }
+            //Menu Open
             if (e.getActionCommand().equals("Open")) {
 
                 JFileChooser filechooser = new JFileChooser(mem_path);
@@ -220,11 +222,11 @@ public class memo1 extends JFrame{
                 }
 
                 try {
-// 指定のファイル URL のファイルをバイト列として読み込む
+                    // 指定のファイル URL のファイルをバイト列として読み込む
                     byte[] fileContentBytes = Files.readAllBytes(Paths.get(directory));
-// 読み込んだバイト列を UTF-8 でデコードして文字列にする
+                    // 読み込んだバイト列を UTF-8 でデコードして文字列にする
                     String fileContentStr = new String(fileContentBytes, StandardCharsets.UTF_8);
-// レコード単位で分割
+                    // レコード単位で分割
                     strs = fileContentStr.split("\r\n\\.");
 
                     treedata = new Hashtable<String, Integer>();
@@ -280,6 +282,7 @@ public class memo1 extends JFrame{
                 }
             }
 
+            //Menu Save
             if (e.getActionCommand().equals("Save")) {
                 JFileChooser filechooser = new JFileChooser(mem_path);
                 String directory = "";
@@ -303,6 +306,7 @@ public class memo1 extends JFrame{
                 } catch (Exception aho) {
                 }
             }
+            //Menu FontSelect
             if (e.getActionCommand().equals("FontSelect")) {
                 JDialog font_Sel = new JDialog(frm,"font select");
                 font_Sel.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -319,15 +323,17 @@ public class memo1 extends JFrame{
                     }
                 });
             }
+            //Menu dialog comboFonts
             if (e.getActionCommand().equals("comboFonts")) {
-        /* フォント名変更 */
+                /* フォント名変更 */
                 font_name = comboFonts.getSelectedItem().toString();
                 Font font = new Font(font_name,Font.PLAIN,font_size);
                 tree.setFont(font);
                 tx.setFont(font);
             }
+            //Menu dialog comboSizes
             if (e.getActionCommand().equals("comboSizes")) {
-        /* フォントサイズ変更 */
+                /* フォントサイズ変更 */
                 try{
                     font_size = Integer.parseInt(comboSizes.getSelectedItem().toString());
                 }catch (NumberFormatException ex){
@@ -337,12 +343,14 @@ public class memo1 extends JFrame{
                 tree.setFont(font);
                 tx.setFont(font);
             }
+            //Menu property read
             if (e.getActionCommand().equals("prop read")) {
                 prop_read();
                 Font font = new Font(font_name,Font.PLAIN,font_size);
                 tree.setFont(font);
                 tx.setFont(font);
             }
+            //Menu property write
             if (e.getActionCommand().equals("prop write")) {
                 try {
                     // FileWriterクラスのオブジェクトを生成する
@@ -365,6 +373,7 @@ public class memo1 extends JFrame{
                 }
 
             }
+            //Menu Ver
             if (e.getActionCommand().equals("Ver")) {
                 JDialog alert = new JDialog(frm, "バージョン情報");
                 alert.add(new JLabel("メモ Ver.0.0"));
